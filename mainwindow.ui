@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>934</width>
-    <height>652</height>
+    <width>865</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,9 +27,56 @@
     </sizepolicy>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="2" rowspan="2">
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>打赏作者</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QFrame" name="frame_2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>手动读取</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="0" column="0" colspan="2">
      <widget class="QFrame" name="frame">
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="2">
+        <widget class="QRadioButton" name="radioButton_folder">
+         <property name="text">
+          <string>文件夹</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>跳过扩展名：</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QCheckBox" name="checkBox">
          <property name="acceptDrops">
@@ -46,6 +93,48 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="6">
+        <widget class="QComboBox" name="comboBox_2">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>无</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>.h</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>.c</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>.cpp</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>.txt</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>.doc</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>.xls</string>
+          </property>
+         </item>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QRadioButton" name="radioButton_file">
          <property name="text">
@@ -53,13 +142,6 @@
          </property>
          <property name="checked">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QRadioButton" name="radioButton_folder">
-         <property name="text">
-          <string>文件夹</string>
          </property>
         </widget>
        </item>
@@ -135,55 +217,6 @@
          </item>
         </widget>
        </item>
-       <item row="0" column="5">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>跳过扩展名：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QComboBox" name="comboBox_2">
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-         <item>
-          <property name="text">
-           <string>无</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>.h</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>.c</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>.cpp</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>.txt</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>.doc</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>.xls</string>
-          </property>
-         </item>
-        </widget>
-       </item>
        <item row="0" column="7">
         <widget class="QPushButton" name="pushButton">
          <property name="text">
@@ -192,39 +225,6 @@
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QFrame" name="frame_2">
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>手动读取</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEdit">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="2" rowspan="2">
-     <widget class="QPushButton" name="pushButton_4">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>打赏作者</string>
-      </property>
      </widget>
     </item>
     <item row="2" column="0">
@@ -245,31 +245,31 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
-           <string>Tab 1</string>
+           <string>删除</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QGroupBox" name="groupBox">
              <property name="title">
-              <string/>
+              <string>删除中间的内容</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_2">
              <property name="title">
-              <string>GroupBox</string>
+              <string>删除左边全部</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_3">
              <property name="title">
-              <string>GroupBox</string>
+              <string>删除右边全部</string>
              </property>
             </widget>
            </item>
@@ -277,7 +277,193 @@
          </widget>
          <widget class="QWidget" name="tab_2">
           <attribute name="title">
-           <string>Tab 2</string>
+           <string>替换</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="1" column="0">
+            <widget class="QGroupBox" name="groupBox_5">
+             <property name="title">
+              <string>简繁体之间转换</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="radioButton_5">
+                <property name="text">
+                 <string>繁转简</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" rowspan="2">
+               <widget class="QPushButton" name="pushButton_6">
+                <property name="text">
+                 <string>转换</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="radioButton_6">
+                <property name="text">
+                 <string>简转繁</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>GroupBox</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="groupBox_4">
+             <property name="title">
+              <string>替换</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_8">
+              <item row="1" column="0" colspan="2">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_4">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="placeholderText">
+                   <string>前</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>换成</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_5">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="placeholderText">
+                   <string>后</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_6">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="placeholderText">
+                   <string>次数</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_5">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>全部替换</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="1">
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <item>
+                 <widget class="QRadioButton" name="radioButton_3">
+                  <property name="text">
+                   <string>从最左边开始</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="radioButton_4">
+                  <property name="text">
+                   <string>从最右边开始</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <widget class="QRadioButton" name="radioButton_2">
+                  <property name="text">
+                   <string>只更改数字后字符</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="radioButton">
+                  <property name="text">
+                   <string>不限制</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QGroupBox" name="groupBox_7">
+             <property name="title">
+              <string>GroupBox</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_3">
+          <attribute name="title">
+           <string>添加</string>
           </attribute>
          </widget>
         </widget>
@@ -297,20 +483,29 @@
        <item row="0" column="0">
         <widget class="QLineEdit" name="lineEdit_2">
          <property name="text">
-          <string>文件名</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+         <property name="placeholderText">
+          <string>文件名</string>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLineEdit" name="lineEdit_3">
          <property name="text">
-          <string>后缀</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+         <property name="placeholderText">
+          <string>后缀</string>
          </property>
         </widget>
        </item>
@@ -341,7 +536,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>934</width>
+     <width>865</width>
      <height>26</height>
     </rect>
    </property>

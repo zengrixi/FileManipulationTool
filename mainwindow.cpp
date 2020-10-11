@@ -8,18 +8,22 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , _type(File)
+    , _type(Type::File)
     , _currPath(QString())
     , _winflags(windowFlags())
+    , _fileOperations(new FileOperations(this))
 {
     ui->setupUi(this);
 
     initStyleSheet();
 
     connect(ui->radioButton_file, &QRadioButton::toggled
-        , this, &MainWindow::on_file_or_folder);
+        , this, &MainWindow::selFileOrFolder);
     connect(ui->radioButton_folder, &QRadioButton::toggled
-        , this, &MainWindow::on_file_or_folder);
+        , this, &MainWindow::selFileOrFolder);
+
+    // 初始化为繁体转简体
+    _simplifiedAndTradFunctions = Chardet::CharConversion::convertTradCharactersToSimplifiedCharacters;
 }
 
 MainWindow::~MainWindow()
@@ -60,7 +64,7 @@ void MainWindow::on_pushButton_2_clicked()
     {
         ui->lineEdit->setText(_currPath);
         // 显示当前目录的文件/文件夹
-        folderTraversal(_currPath);
+        showFilesUnderPath(_currPath);
     }
 }
 
@@ -69,20 +73,20 @@ void MainWindow::on_pushButton_4_clicked()
     // 打赏作者
 }
 
-void MainWindow::on_file_or_folder()
+// 选中文件或者文件夹
+void MainWindow::selFileOrFolder()
 {
-    // 选中文件或文件夹
     if ( ui->radioButton_folder->isChecked() )
     {
-        _type = Folder;
+        _type = Type::Folder;
     }
     else if ( ui->radioButton_file->isChecked() )
     {
-        _type = File;
+        _type = Type::File;
     }
 
     // 刷新列表显示
-    folderTraversal(_currPath);
+    showFilesUnderPath(_currPath);
 }
 
 void MainWindow::initStyleSheet()
@@ -91,7 +95,8 @@ void MainWindow::initStyleSheet()
     ui->pushButton_4->setStyleSheet("background-color: rgba(0, 0, 0, 0)");// 实现一直透明
 }
 
-void MainWindow::folderTraversal(const QString &path)
+// 显示路径下的文件
+void MainWindow::showFilesUnderPath(const QString &path)
 {
     ui->listWidget->clear();
 
@@ -119,15 +124,15 @@ void MainWindow::folderTraversal(const QString &path)
     {
         QFileInfo fileInfo = list.at(i);
         bool bisDir = fileInfo.isDir();
-        if ( bisDir && _type == Folder )
+        if ( bisDir && _type == Type::Folder )
         {
             ui->listWidget->addItem(fileInfo.fileName());
         }
-        else if ( !bisDir && _type == File )
+        else if ( !bisDir && _type == Type::File )
         {
             QString filename = fileInfo.fileName();
             QString suffix = ui->comboBox->currentText();
-            QString ignore =  ui->comboBox_2->currentText();
+            QString ignore = ui->comboBox_2->currentText();
             if ( suffix.contains("所有") )
             {
                 // 忽略扩展名
@@ -138,6 +143,7 @@ void MainWindow::folderTraversal(const QString &path)
             }
             else
             {
+                // 只显示扩展名
                 if ( filename.contains(suffix) )
                 {
                     ui->listWidget->addItem(filename);
@@ -152,16 +158,52 @@ void MainWindow::folderTraversal(const QString &path)
 void MainWindow::on_pushButton_3_clicked()
 {
     // 创建文件
+    QString filePath = ui->lineEdit->text();
+    QString fileNm = ui->lineEdit_2->text();
+    QString sfx = ui->lineEdit_3->text();
+    if ( !sfx.isEmpty() )
+    {
+        fileNm + "." + ui->lineEdit_3->text();
+    }
+    _fileOperations->createAFile(filePath, fileNm);
 }
 
 void MainWindow::on_comboBox_editTextChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1)
     // 检索扩展名
-    folderTraversal(_currPath);
+    showFilesUnderPath(_currPath);
 }
 
 void MainWindow::on_comboBox_2_editTextChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1)
     // 忽略扩展名
-    folderTraversal(_currPath);
+    showFilesUnderPath(_currPath);
+}
+
+void MainWindow::on_pushButton_6_clicked()
+{
+    // 简繁转换
+    if (ui->radioButton_5->isChecked())
+    {
+        // 繁体转简体
+        _simplifiedAndTradFunctions = Chardet::CharConversion::convertTradCharactersToSimplifiedCharacters;
+    }
+    else if (ui->radioButton_6->isChecked())
+    {
+        // 简体转繁体
+        _simplifiedAndTradFunctions = Chardet::CharConversion::convertSimplifiedCharactersToTradCharacters;
+    }
+
+    auto filePath = ui->lineEdit->text();
+    auto i = 0;
+    while (i < ui->listWidget->count())
+    {
+        auto fileNm = ui->listWidget->item(i)->text();
+        auto nmAftChg = _simplifiedAndTradFunctions(fileNm);
+        _fileOperations->fileRename(filePath, fileNm, nmAftChg);
+        i++;
+    }
+    showFilesUnderPath(_currPath);
 }

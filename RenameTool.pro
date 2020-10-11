@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,10 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        charconversion.cpp \
+        fileoperations.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+        charconversion.h \
+        fileoperations.h \
         mainwindow.h
 
 FORMS += \
@@ -38,3 +42,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    db/db.qrc

@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+#include "fileoperations.h"
+#include "charconversion.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -11,10 +14,10 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    typedef enum
+    enum class Type
     {
         File = 0x01, Folder = 0x02       
-    }Type;
+    };
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -27,7 +30,7 @@ private slots:
 
     void on_pushButton_4_clicked();
 
-    void on_file_or_folder();
+    void selFileOrFolder();
 
     void on_pushButton_3_clicked();
 
@@ -35,9 +38,11 @@ private slots:
 
     void on_comboBox_2_editTextChanged(const QString &arg1);
 
+    void on_pushButton_6_clicked();
+
 private:
     void initStyleSheet();
-    void folderTraversal(const QString & path);
+    void showFilesUnderPath(const QString & path);
 
 private:
     Ui::MainWindow *ui;
@@ -45,6 +50,8 @@ private:
     Type _type;
     QString _currPath;
     Qt::WindowFlags _winflags;
+    FileOperations *_fileOperations;
+    Chardet::pFunSimplifiedAndTradConversion _simplifiedAndTradFunctions;
 };
 
 #endif // MAINWINDOW_H
