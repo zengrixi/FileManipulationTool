@@ -5,6 +5,10 @@
 #include <QMessageBox>
 #include <QDebug>
 
+// 正则表达式定义
+const static QString g_regularExpressionToExtractFileNm("([^\\\\]+)(?=\\.)");
+const static QString g_regularExpressionToExtractSfxNm("\\.[^\\.]\\w*$");
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -24,6 +28,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 初始化为繁体转简体
     _simplifiedAndTradFunctions = Chardet::CharConversion::convertTradCharactersToSimplifiedCharacters;
+
+    // 绑定添加按钮事件
+    connect(ui->pushButton_8, &QPushButton::clicked, this, &MainWindow::addCharactersToTheFileNm);
+    connect(ui->pushButton_9, &QPushButton::clicked, this, &MainWindow::addCharactersToTheFileNm);
+
+    // 列表更新事件
+    connect(ui->comboBox, &QComboBox::editTextChanged, this, &MainWindow::showFilesUnderPath);
+    connect(ui->comboBox_2, &QComboBox::editTextChanged, this, &MainWindow::showFilesUnderPath);
 }
 
 MainWindow::~MainWindow()
@@ -62,9 +74,9 @@ void MainWindow::on_pushButton_2_clicked()
     }
     else
     {
-        ui->lineEdit->setText(_currPath);
+        ui->currPath->setText(_currPath);
         // 显示当前目录的文件/文件夹
-        showFilesUnderPath(_currPath);
+        showFilesUnderPath();
     }
 }
 
@@ -86,7 +98,7 @@ void MainWindow::selFileOrFolder()
     }
 
     // 刷新列表显示
-    showFilesUnderPath(_currPath);
+    showFilesUnderPath();
 }
 
 void MainWindow::initStyleSheet()
@@ -96,11 +108,11 @@ void MainWindow::initStyleSheet()
 }
 
 // 显示路径下的文件
-void MainWindow::showFilesUnderPath(const QString &path)
+void MainWindow::showFilesUnderPath()
 {
     ui->listWidget->clear();
 
-    QDir dir(path);
+    QDir dir(_currPath);
     if ( !dir.exists() )
     {
         return;
@@ -158,7 +170,7 @@ void MainWindow::showFilesUnderPath(const QString &path)
 void MainWindow::on_pushButton_3_clicked()
 {
     // 创建文件
-    QString filePath = ui->lineEdit->text();
+    QString filePath = _currPath;
     QString fileNm = ui->lineEdit_2->text();
     QString sfx = ui->lineEdit_3->text();
     if ( !sfx.isEmpty() )
@@ -166,20 +178,6 @@ void MainWindow::on_pushButton_3_clicked()
         fileNm + "." + ui->lineEdit_3->text();
     }
     _fileOperations->createAFile(filePath, fileNm);
-}
-
-void MainWindow::on_comboBox_editTextChanged(const QString &arg1)
-{
-    Q_UNUSED(arg1)
-    // 检索扩展名
-    showFilesUnderPath(_currPath);
-}
-
-void MainWindow::on_comboBox_2_editTextChanged(const QString &arg1)
-{
-    Q_UNUSED(arg1)
-    // 忽略扩展名
-    showFilesUnderPath(_currPath);
 }
 
 void MainWindow::on_pushButton_6_clicked()
@@ -196,14 +194,56 @@ void MainWindow::on_pushButton_6_clicked()
         _simplifiedAndTradFunctions = Chardet::CharConversion::convertSimplifiedCharactersToTradCharacters;
     }
 
-    auto filePath = ui->lineEdit->text();
+    traverseTheFileLstAndProcess([=] (const QString &fileNm)->QString {
+        return _simplifiedAndTradFunctions(fileNm);
+    });
+    showFilesUnderPath();
+}
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    // 给文件名加序列号
+}
+
+// 将字符添加到文件
+void MainWindow::addCharactersToTheFileNm()
+{
+    auto btn = qobject_cast<QPushButton *>(sender());
+    auto charactersToBeAdded = ui->charactersToAdd->text();
+    auto func = [=] (const QString &fileNm)->QString {
+        auto nmAftChg = QString();
+        // 头部添加或者尾部添加
+        if (btn == ui->pushButton_8)
+            nmAftChg = charactersToBeAdded + fileNm;
+        else if (btn == ui->pushButton_9)
+        {
+            // 判断是否有后缀, 如果有后缀则在后缀前添加
+            auto regular = QRegExp(g_regularExpressionToExtractFileNm);
+            regular.indexIn(fileNm);
+            auto frstNm = regular.cap(0);
+            auto regular2 = QRegExp(g_regularExpressionToExtractSfxNm);
+            regular2.indexIn(fileNm);
+            auto suffix = regular2.cap(0);
+            nmAftChg = frstNm + charactersToBeAdded + suffix;
+        }
+
+        return nmAftChg;
+    };
+    traverseTheFileLstAndProcess(func);
+    showFilesUnderPath();
+}
+
+template<typename T>
+void MainWindow::traverseTheFileLstAndProcess(const T &func)
+{
+    auto nmAftChg = QString();
     auto i = 0;
     while (i < ui->listWidget->count())
     {
         auto fileNm = ui->listWidget->item(i)->text();
-        auto nmAftChg = _simplifiedAndTradFunctions(fileNm);
-        _fileOperations->fileRename(filePath, fileNm, nmAftChg);
+        // 头部添加或者尾部添加
+        nmAftChg = func(fileNm);
+        _fileOperations->fileRename(_currPath, fileNm, nmAftChg);
         i++;
     }
-    showFilesUnderPath(_currPath);
 }
