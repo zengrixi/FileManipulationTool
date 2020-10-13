@@ -5,6 +5,7 @@
 
 #include "fileoperations.h"
 #include "charconversion.h"
+#include "picturebannerwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -46,6 +47,7 @@ private slots:
     void addCharactersToTheFileNm();
 
 private:
+    void initializeTheForm();
     void initStyleSheet();
     void showFilesUnderPath();
     template <typename T>

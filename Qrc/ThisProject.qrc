@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/image">
+        <file alias="alipayPaymentCd">../Resource/alipayPaymentCd.jpg</file>
+        <file alias="wechatPaymentCd">../Resource/wechatPaymentCd.png</file>
+        <file alias="qqCollectionCd">../Resource/qqCollectionCd.png</file>
+    </qresource>
+</RCC>

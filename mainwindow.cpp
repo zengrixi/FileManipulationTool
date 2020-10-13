@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    initializeTheForm();
     initStyleSheet();
 
     connect(ui->radioButton_file, &QRadioButton::toggled
@@ -46,7 +47,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_checkBox_stateChanged(int arg1)
 {
     // 窗口置顶
-    switch ( arg1 )
+    switch (arg1)
     {
     case Qt::Unchecked:
         setWindowFlags(_winflags);
@@ -67,7 +68,7 @@ void MainWindow::on_pushButton_2_clicked()
     QFileDialog::getExistingDirectory(
         this, "选择一个目录", "/home", QFileDialog::ShowDirsOnly);
 
-    if ( _currPath.isEmpty() )
+    if (_currPath.isEmpty())
     {
         QMessageBox::critical(
             this, "提示", "什么都没有选择", QMessageBox::Ok);
@@ -83,16 +84,28 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::on_pushButton_4_clicked()
 {
     // 打赏作者
+    QEventLoop eventLoop;
+    PictureBannerWidget rewardQrCdDispForm;
+    //打赏窗体初始化
+    rewardQrCdDispForm.addPage(QPixmap(":/image/alipayPaymentCd"));
+    rewardQrCdDispForm.addPage(QPixmap(":/image/wechatPaymentCd"));
+    rewardQrCdDispForm.addPage(QPixmap(":/image/qqCollectionCd"));
+    rewardQrCdDispForm.setWindowTitle("感谢打赏٩(๑❛ᴗ❛๑)۶");
+    rewardQrCdDispForm.setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    rewardQrCdDispForm.setAttribute(Qt::WA_ShowModal);
+    rewardQrCdDispForm.show();
+    connect(&rewardQrCdDispForm, &PictureBannerWidget::close, &eventLoop, &QEventLoop::quit);
+    eventLoop.exec();
 }
 
 // 选中文件或者文件夹
 void MainWindow::selFileOrFolder()
 {
-    if ( ui->radioButton_folder->isChecked() )
+    if (ui->radioButton_folder->isChecked())
     {
         _type = Type::Folder;
     }
-    else if ( ui->radioButton_file->isChecked() )
+    else if (ui->radioButton_file->isChecked())
     {
         _type = Type::File;
     }
@@ -104,7 +117,20 @@ void MainWindow::selFileOrFolder()
 void MainWindow::initStyleSheet()
 {
     // 初始化样式表
-    ui->pushButton_4->setStyleSheet("background-color: rgba(0, 0, 0, 0)");// 实现一直透明
+    QFile f(":qdarkstyle/style.qss");
+
+    if (!f.exists())
+    {
+        printf("Unable to set stylesheet, file not found\n");
+    }
+    else
+    {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
+
+//    ui->pushButton_4->setStyleSheet("background-color: rgba(0, 0, 0, 0)");// 实现一直透明
 }
 
 // 显示路径下的文件
@@ -113,7 +139,7 @@ void MainWindow::showFilesUnderPath()
     ui->listWidget->clear();
 
     QDir dir(_currPath);
-    if ( !dir.exists() )
+    if (!dir.exists())
     {
         return;
     }
@@ -126,7 +152,7 @@ void MainWindow::showFilesUnderPath()
 
     //转化成一个list
     QFileInfoList list = dir.entryInfoList();
-    if ( list.size() < 1 )
+    if (list.size() < 1)
     {
         return;
     }
@@ -136,19 +162,19 @@ void MainWindow::showFilesUnderPath()
     {
         QFileInfo fileInfo = list.at(i);
         bool bisDir = fileInfo.isDir();
-        if ( bisDir && _type == Type::Folder )
+        if (bisDir && _type == Type::Folder)
         {
             ui->listWidget->addItem(fileInfo.fileName());
         }
-        else if ( !bisDir && _type == Type::File )
+        else if (!bisDir && _type == Type::File)
         {
             QString filename = fileInfo.fileName();
             QString suffix = ui->comboBox->currentText();
             QString ignore = ui->comboBox_2->currentText();
-            if ( suffix.contains("所有") )
+            if (suffix.contains("所有"))
             {
                 // 忽略扩展名
-                if ( ignore.contains("无") || !filename.contains(ignore) )
+                if (ignore.contains("无") || !filename.contains(ignore))
                 {
                     ui->listWidget->addItem(filename);
                 }
@@ -156,7 +182,7 @@ void MainWindow::showFilesUnderPath()
             else
             {
                 // 只显示扩展名
-                if ( filename.contains(suffix) )
+                if (filename.contains(suffix))
                 {
                     ui->listWidget->addItem(filename);
                 }
@@ -164,7 +190,7 @@ void MainWindow::showFilesUnderPath()
         }
 
         i++;
-    } while ( i < list.size() );
+    } while (i < list.size());
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -173,7 +199,7 @@ void MainWindow::on_pushButton_3_clicked()
     QString filePath = _currPath;
     QString fileNm = ui->lineEdit_2->text();
     QString sfx = ui->lineEdit_3->text();
-    if ( !sfx.isEmpty() )
+    if (!sfx.isEmpty())
     {
         fileNm + "." + ui->lineEdit_3->text();
     }
@@ -203,6 +229,13 @@ void MainWindow::on_pushButton_6_clicked()
 void MainWindow::on_pushButton_7_clicked()
 {
     // 给文件名加序列号
+    auto count = ui->listWidget->count();
+    auto brkChar = ui->brkChar->text();
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
+        auto serlNum = QString::number(count--);
+        return serlNum + brkChar + fileNm;
+    });
+    showFilesUnderPath();
 }
 
 // 将字符添加到文件
@@ -210,7 +243,7 @@ void MainWindow::addCharactersToTheFileNm()
 {
     auto btn = qobject_cast<QPushButton *>(sender());
     auto charactersToBeAdded = ui->charactersToAdd->text();
-    auto func = [=] (const QString &fileNm)->QString {
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
         auto nmAftChg = QString();
         // 头部添加或者尾部添加
         if (btn == ui->pushButton_8)
@@ -228,9 +261,13 @@ void MainWindow::addCharactersToTheFileNm()
         }
 
         return nmAftChg;
-    };
-    traverseTheFileLstAndProcess(func);
+    });
     showFilesUnderPath();
+}
+
+void MainWindow::initializeTheForm()
+{
+
 }
 
 template<typename T>

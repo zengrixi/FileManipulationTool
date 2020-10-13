@@ -24,15 +24,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+# 子目录
+include($$PWD/Module/Module.pri)
+include($$PWD/Qrc/Qrc.pri)
+
 SOURCES += \
-        charconversion.cpp \
-        fileoperations.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
-        charconversion.h \
-        fileoperations.h \
         mainwindow.h
 
 FORMS += \
@@ -43,5 +43,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-RESOURCES += \
-    db/db.qrc
+# 配置执行文件所在目录
+CONFIG(debug, release|debug) {
+    DESTDIR = $$PWD/bin/debug
+} else {
+    DESTDIR = $$PWD/bin/release
+}
