@@ -46,13 +46,18 @@ private slots:
 
     void addCharactersToTheFileNm();
 
+    void on_replaceAll_clicked();
+
+    void delBtnTriggered();
+
 private:
     void initializeTheForm();
-    void initStyleSheet();
+    void initializeTheCtl();
+    void initializeTheStyleShet();
     void showFilesUnderPath();
     template <typename T>
-    void traverseTheFileLstAndProcess(T const &func);
 
+    void traverseTheFileLstAndProcess(T const &func);
 
 private:
     Ui::MainWindow *ui;

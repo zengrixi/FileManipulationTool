@@ -6,8 +6,20 @@
 #include <QDebug>
 
 // 正则表达式定义
-const static QString g_regularExpressionToExtractFileNm("([^\\\\]+)(?=\\.)");
+const static QString g_regularExpressionToExtractFileNm("^.*(?=\\.)");
 const static QString g_regularExpressionToExtractSfxNm("\\.[^\\.]\\w*$");
+
+const static auto extractFileNm = [] (const QString &fileNm)->QString {
+    auto regular = QRegExp(g_regularExpressionToExtractFileNm);
+    regular.indexIn(fileNm);
+    return regular.cap(0);
+};
+
+const static auto extractTheSfx = [] (const QString &fileNm)->QString {
+    auto regular2 = QRegExp(g_regularExpressionToExtractSfxNm);
+    regular2.indexIn(fileNm);
+    return regular2.cap(0);
+};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     initializeTheForm();
-    initStyleSheet();
+    initializeTheStyleShet();
 
     connect(ui->radioButton_file, &QRadioButton::toggled
         , this, &MainWindow::selFileOrFolder);
@@ -33,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     // 绑定添加按钮事件
     connect(ui->pushButton_8, &QPushButton::clicked, this, &MainWindow::addCharactersToTheFileNm);
     connect(ui->pushButton_9, &QPushButton::clicked, this, &MainWindow::addCharactersToTheFileNm);
+    connect(ui->pushButton_delAllPre, &QPushButton::clicked, this, &MainWindow::delBtnTriggered);
+    connect(ui->pushButton_delAllFollowing, &QPushButton::clicked, this, &MainWindow::delBtnTriggered);
 
     // 列表更新事件
     connect(ui->comboBox, &QComboBox::editTextChanged, this, &MainWindow::showFilesUnderPath);
@@ -114,9 +128,8 @@ void MainWindow::selFileOrFolder()
     showFilesUnderPath();
 }
 
-void MainWindow::initStyleSheet()
+void MainWindow::initializeTheStyleShet()           //初始化样式表
 {
-    // 初始化样式表
     QFile f(":qdarkstyle/style.qss");
 
     if (!f.exists())
@@ -223,7 +236,6 @@ void MainWindow::on_pushButton_6_clicked()
     traverseTheFileLstAndProcess([=] (const QString &fileNm)->QString {
         return _simplifiedAndTradFunctions(fileNm);
     });
-    showFilesUnderPath();
 }
 
 void MainWindow::on_pushButton_7_clicked()
@@ -235,7 +247,6 @@ void MainWindow::on_pushButton_7_clicked()
         auto serlNum = QString::number(count--);
         return serlNum + brkChar + fileNm;
     });
-    showFilesUnderPath();
 }
 
 // 将字符添加到文件
@@ -251,21 +262,21 @@ void MainWindow::addCharactersToTheFileNm()
         else if (btn == ui->pushButton_9)
         {
             // 判断是否有后缀, 如果有后缀则在后缀前添加
-            auto regular = QRegExp(g_regularExpressionToExtractFileNm);
-            regular.indexIn(fileNm);
-            auto frstNm = regular.cap(0);
-            auto regular2 = QRegExp(g_regularExpressionToExtractSfxNm);
-            regular2.indexIn(fileNm);
-            auto suffix = regular2.cap(0);
+            auto frstNm = extractFileNm(fileNm);
+            auto suffix = extractTheSfx(fileNm);
             nmAftChg = frstNm + charactersToBeAdded + suffix;
         }
 
         return nmAftChg;
     });
-    showFilesUnderPath();
 }
 
-void MainWindow::initializeTheForm()
+void MainWindow::initializeTheForm()            //初始化表格
+{
+
+}
+
+void MainWindow::initializeTheCtl()         //初始化控件
 {
 
 }
@@ -283,4 +294,87 @@ void MainWindow::traverseTheFileLstAndProcess(const T &func)
         _fileOperations->fileRename(_currPath, fileNm, nmAftChg);
         i++;
     }
+    showFilesUnderPath();
+}
+
+void MainWindow::on_replaceAll_clicked()
+{
+    // 全部替换
+    auto befStr = ui->lineEdit_bef->text();
+    auto postStr = ui->lineEdit_rear->text();
+    auto freq = ui->lineEdit_freq->text().toInt();
+    auto left = ui->radioButton_left->isChecked();
+    auto right = ui->radioButton_right->isChecked();
+    auto excludeNumbers = ui->radioButton_aftTheNum->isChecked();
+
+    if (befStr == postStr) return;
+
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
+        // 取文件名和后缀名
+        auto frstNm = extractFileNm(fileNm);
+        auto suffix = extractTheSfx(fileNm);
+        auto serlNum = QString();
+
+        // 是否排除开头的数字
+        if (excludeNumbers)
+        {
+            auto regular2 = QRegExp("^[0-9]*");
+            regular2.indexIn(fileNm);
+            serlNum = regular2.cap(0);
+            frstNm.remove(0, serlNum.size());
+        }
+
+        // 替换字符串
+        if (left)
+        {
+            int i = 0, j = 0;
+            while ((j = frstNm.indexOf(befStr, j)) != -1)
+            {
+                if (++i > freq && freq > 0) break;
+                frstNm.replace(j, befStr.size(), postStr);
+            }
+        }
+        else if (right)
+        {
+            int i = 0, j = 0;
+            auto index = -1;
+            while ((j = frstNm.lastIndexOf(befStr, index)) != -1)
+            {
+                if (++i > freq && freq > 0) break;
+                frstNm.replace(j, befStr.size(), postStr);
+                index = j - frstNm.size();
+            }
+        }
+
+        return serlNum + frstNm + suffix;
+    });
+}
+
+void MainWindow::delBtnTriggered()
+{
+    //删除按钮触发
+    auto btn = qobject_cast<QPushButton *>(sender());
+    auto delAllPre = (btn == ui->pushButton_delAllPre);
+    auto delAllFollowing = (btn == ui->pushButton_delAllFollowing);
+    auto inclItself = ui->checkBox_2->isChecked();
+    auto deletedContent = ui->lineEdit->text();
+    auto frstAppearance = ui->radioButton_frstAppearance->isChecked();
+    auto lastAppeared = ui->radioButton_lastAppeared->isChecked();
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
+        // 取文件名和后缀名
+        auto frstNm = extractFileNm(fileNm);
+        auto suffix = extractTheSfx(fileNm);
+        auto leftShftLen = inclItself ? deletedContent.size() : 0;
+        auto rightShftLen = inclItself ? 0 : deletedContent.size();
+        auto index = frstAppearance ? frstNm.indexOf(deletedContent) :
+                     (lastAppeared ? frstNm.lastIndexOf(deletedContent) : -1);           //首次出现还是最后出现
+        if (index != -1)
+        {
+            auto moveSubscriptLeft = index + leftShftLen;
+            auto moveSubscriptRight = index + rightShftLen;
+            delAllPre ? frstNm.remove(0, moveSubscriptLeft) :
+            delAllFollowing ? frstNm.remove(moveSubscriptRight, frstNm.count() - moveSubscriptRight) : QString();         //删除前面还是删除后面
+        }
+        return frstNm + suffix;
+    });
 }
