@@ -55,6 +55,7 @@ private:
     void initializeTheCtl();
     void initializeTheStyleShet();
     void showFilesUnderPath();
+    void recursivelyTraverseFiles(const QString &path);
     template <typename T>
 
     void traverseTheFileLstAndProcess(T const &func);

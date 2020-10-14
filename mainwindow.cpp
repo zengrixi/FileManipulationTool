@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
+#include <QtConcurrent>
 
 // 正则表达式定义
 const static QString g_regularExpressionToExtractFileNm("^.*(?=\\.)");
@@ -134,7 +135,7 @@ void MainWindow::initializeTheStyleShet()           //初始化样式表
 
     if (!f.exists())
     {
-        printf("Unable to set stylesheet, file not found\n");
+        qDebug("无法设置样式表，找不到文件");
     }
     else
     {
@@ -151,59 +152,72 @@ void MainWindow::showFilesUnderPath()
 {
     ui->listWidget->clear();
 
-    QDir dir(_currPath);
+    QEventLoop eventLoop;
+    QtConcurrent::run([&] {
+        recursivelyTraverseFiles(_currPath);
+        eventLoop.exit();
+    });
+    eventLoop.exec();
+}
+
+void MainWindow::recursivelyTraverseFiles(const QString &path)          //递归遍历文件
+{
+    QDir dir(path);
     if (!dir.exists())
     {
+        qDebug() << "未找到路径";
         return;
     }
+    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);         //设置过滤器
+    dir.setSorting(QDir::DirsFirst);            //设置排序
 
-    // 取到所有的文件名, 但是去掉.和..的文件夹
-    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-
-    // 文件夹优先
-    dir.setSorting(QDir::DirsFirst);
-
-    //转化成一个list
-    QFileInfoList list = dir.entryInfoList();
-    if (list.size() < 1)
+    auto recursive = ui->checkBox_readSubdirectory->isChecked();            //是否递归
+    for (auto fileInfo : dir.entryInfoList())
     {
-        return;
-    }
-    
-    int i = 0;
-    do
-    {
-        QFileInfo fileInfo = list.at(i);
-        bool bisDir = fileInfo.isDir();
-        if (bisDir && _type == Type::Folder)
+        auto fileNm = fileInfo.fileName();
+        auto bisDir = fileInfo.isDir();
+        auto filePath = fileInfo.filePath();
+        if (bisDir)
         {
-            ui->listWidget->addItem(fileInfo.fileName());
+            if (_type == Type::Folder)
+            {
+                auto item = new QListWidgetItem(fileNm);
+                item->setToolTip(filePath);
+                ui->listWidget->addItem(item);
+            }
+            if (recursive)
+                recursivelyTraverseFiles(filePath);         //递归遍历文件
         }
-        else if (!bisDir && _type == Type::File)
+        else
         {
-            QString filename = fileInfo.fileName();
-            QString suffix = ui->comboBox->currentText();
-            QString ignore = ui->comboBox_2->currentText();
+            if (_type != Type::File)
+                continue;
+
+            auto suffix = ui->comboBox->currentText();
+            auto ignore = ui->comboBox_2->currentText();
+            auto isSuffix = extractTheSfx(fileNm);
             if (suffix.contains("所有"))
             {
                 // 忽略扩展名
-                if (ignore.contains("无") || !filename.contains(ignore))
+                if (ignore.contains("无") || isSuffix != ignore)
                 {
-                    ui->listWidget->addItem(filename);
+                    auto item = new QListWidgetItem(fileNm);
+                    item->setToolTip(filePath);
+                    ui->listWidget->addItem(item);
                 }
             }
             else
             {
-                // 只显示扩展名
-                if (filename.contains(suffix))
+                // 只显示某种类型的文件
+                if (isSuffix == suffix)
                 {
-                    ui->listWidget->addItem(filename);
+                    auto item = new QListWidgetItem(fileNm);
+                    item->setToolTip(filePath);
+                    ui->listWidget->addItem(item);
                 }
             }
         }
-
-        i++;
-    } while (i < list.size());
+    };
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -289,9 +303,13 @@ void MainWindow::traverseTheFileLstAndProcess(const T &func)
     while (i < ui->listWidget->count())
     {
         auto fileNm = ui->listWidget->item(i)->text();
+        auto filePath = ui->listWidget->item(i)->toolTip();
+        //去除尾部的文件名
+        auto index = filePath.lastIndexOf("/");
+        filePath.remove(index + 1, fileNm.size());
         // 头部添加或者尾部添加
         nmAftChg = func(fileNm);
-        _fileOperations->fileRename(_currPath, fileNm, nmAftChg);
+        _fileOperations->fileRename(filePath, fileNm, nmAftChg);
         i++;
     }
     showFilesUnderPath();

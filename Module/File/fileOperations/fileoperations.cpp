@@ -46,8 +46,8 @@ void FileOperations::createAFile(const QString &saveRout, const QString &fileNm)
 
 void FileOperations::fileRename(const QString &filePath, const QString &curFileNm, const QString &changedNm)
 {
-    auto curr = filePath + "/" + curFileNm;
-    auto change = filePath + "/" + changedNm;
+    auto curr = filePath + curFileNm;
+    auto change = filePath + changedNm;
 
     QEventLoop eventLoop;
     QtConcurrent::run([&] ()
