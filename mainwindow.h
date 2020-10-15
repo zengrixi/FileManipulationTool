@@ -20,11 +20,6 @@ class MainWindow : public QMainWindow
         File = 0x01, Folder = 0x02       
     };
 
-    enum class AddedLocation
-    {
-        Head = 0x01, Tail = 0x02
-    };
-
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();

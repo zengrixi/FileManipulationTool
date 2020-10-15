@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     initializeTheForm();
-    initializeTheStyleShet();
+//    initializeTheStyleShet();
 
     connect(ui->radioButton_file, &QRadioButton::toggled
         , this, &MainWindow::selFileOrFolder);
