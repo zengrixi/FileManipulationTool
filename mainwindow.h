@@ -45,6 +45,8 @@ private slots:
 
     void delBtnTriggered();
 
+    void on_pushButton_10_clicked();
+
 private:
     void initializeTheForm();
     void initializeTheCtl();

@@ -6,6 +6,12 @@
 #include <QDebug>
 #include <QtConcurrent>
 
+#include "strmanipulation.h"
+
+#if defined(Q_OS_WIN32)
+    #include "windows.h"
+#endif
+
 // 正则表达式定义
 const static QString g_regularExpressionToExtractFileNm("^.*(?=\\.)");
 const static QString g_regularExpressionToExtractSfxNm("\\.[^\\.]\\w*$");
@@ -61,17 +67,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_checkBox_stateChanged(int arg1)
 {
-    // 窗口置顶
+#if defined(Q_OS_WIN32)
+    RECT rect;
+    auto hwnd = ::GetForegroundWindow();
+    GetWindowRect(hwnd, &rect);
+#endif
     switch (arg1)
     {
-    case Qt::Unchecked:
+    case Qt::Unchecked:         //取消窗口置顶
+#if defined(Q_OS_WIN)
+        SetWindowPos(hwnd, HWND_NOTOPMOST, rect.left, rect.top
+                     , abs(rect.right - rect.left), abs(rect.bottom - rect.top), SWP_SHOWWINDOW);
+#else
         setWindowFlags(_winflags);
         show();
+#endif
         break;
     case Qt::PartiallyChecked:
-    case Qt::Checked:
+    case Qt::Checked:           //窗口置顶
+#if defined(Q_OS_WIN)
+        SetWindowPos(hwnd, HWND_TOPMOST, rect.left, rect.top
+                     , abs(rect.right - rect.left), abs(rect.bottom - rect.top), SWP_SHOWWINDOW);
+#else
         setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
         show();
+#endif
         break;
     }
 }
@@ -392,6 +412,27 @@ void MainWindow::delBtnTriggered()
             auto moveSubscriptRight = index + rightShftLen;
             delAllPre ? frstNm.remove(0, moveSubscriptLeft) :
             delAllFollowing ? frstNm.remove(moveSubscriptRight, frstNm.count() - moveSubscriptRight) : QString();         //删除前面还是删除后面
+        }
+        return frstNm + suffix;
+    });
+}
+
+void MainWindow::on_pushButton_10_clicked()
+{
+    //顺序删除
+    auto whatToDel = ui->lineEdit_6->text();
+    auto count = ui->lineEdit_7->text().toInt();
+    auto frLeftToRight = ui->radioButton_7->isChecked();
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
+        auto frstNm = extractFileNm(fileNm);
+        auto suffix = extractTheSfx(fileNm);
+        auto index = 0;
+        auto freq = count;
+        freq == 0 ? --freq : freq;          //一开始为0则不计入循环判断
+        while (0 != freq-- &&
+               -1 != (index = StrManipulation::srchStrForwardOrBackward(frstNm, whatToDel, frLeftToRight)))
+        {
+            frstNm.remove(index, whatToDel.size());
         }
         return frstNm + suffix;
     });
