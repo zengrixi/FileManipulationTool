@@ -267,7 +267,7 @@ void MainWindow::on_pushButton_6_clicked()
         _simplifiedAndTradFunctions = Chardet::CharConversion::convertSimplifiedCharactersToTradCharacters;
     }
 
-    traverseTheFileLstAndProcess([=] (const QString &fileNm)->QString {
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
         return _simplifiedAndTradFunctions(fileNm);
     });
 }
@@ -294,13 +294,7 @@ void MainWindow::addCharactersToTheFileNm()
         if (btn == ui->pushButton_8)
             nmAftChg = charactersToBeAdded + fileNm;
         else if (btn == ui->pushButton_9)
-        {
-            // 判断是否有后缀, 如果有后缀则在后缀前添加
-            auto frstNm = extractFileNm(fileNm);
-            auto suffix = extractTheSfx(fileNm);
-            nmAftChg = frstNm + charactersToBeAdded + suffix;
-        }
-
+            nmAftChg = fileNm + charactersToBeAdded;
         return nmAftChg;
     });
 }
@@ -318,7 +312,6 @@ void MainWindow::initializeTheCtl()         //初始化控件
 template<typename T>
 void MainWindow::traverseTheFileLstAndProcess(const T &func)
 {
-    auto nmAftChg = QString();
     auto i = 0;
     while (i < ui->listWidget->count())
     {
@@ -327,8 +320,10 @@ void MainWindow::traverseTheFileLstAndProcess(const T &func)
         //去除尾部的文件名
         auto index = filePath.lastIndexOf("/");
         filePath.remove(index + 1, fileNm.size());
-        // 头部添加或者尾部添加
-        nmAftChg = func(fileNm);
+        //分离文件名和后缀
+        auto frstNm = extractFileNm(fileNm);
+        auto suffix = extractTheSfx(fileNm);
+        auto nmAftChg = func(frstNm) + suffix;
         _fileOperations->fileRename(filePath, fileNm, nmAftChg);
         i++;
     }
@@ -349,8 +344,7 @@ void MainWindow::on_replaceAll_clicked()
 
     traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
         // 取文件名和后缀名
-        auto frstNm = extractFileNm(fileNm);
-        auto suffix = extractTheSfx(fileNm);
+        auto frstNm = fileNm;
         auto serlNum = QString();
 
         // 是否排除开头的数字
@@ -384,7 +378,7 @@ void MainWindow::on_replaceAll_clicked()
             }
         }
 
-        return serlNum + frstNm + suffix;
+        return serlNum + frstNm;
     });
 }
 
@@ -400,8 +394,7 @@ void MainWindow::delBtnTriggered()
     auto lastAppeared = ui->radioButton_lastAppeared->isChecked();
     traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
         // 取文件名和后缀名
-        auto frstNm = extractFileNm(fileNm);
-        auto suffix = extractTheSfx(fileNm);
+        auto frstNm = fileNm;
         auto leftShftLen = inclItself ? deletedContent.size() : 0;
         auto rightShftLen = inclItself ? 0 : deletedContent.size();
         auto index = frstAppearance ? frstNm.indexOf(deletedContent) :
@@ -413,7 +406,7 @@ void MainWindow::delBtnTriggered()
             delAllPre ? frstNm.remove(0, moveSubscriptLeft) :
             delAllFollowing ? frstNm.remove(moveSubscriptRight, frstNm.count() - moveSubscriptRight) : QString();         //删除前面还是删除后面
         }
-        return frstNm + suffix;
+        return frstNm;
     });
 }
 
@@ -424,8 +417,7 @@ void MainWindow::on_pushButton_10_clicked()
     auto count = ui->lineEdit_7->text().toInt();
     auto frLeftToRight = ui->radioButton_7->isChecked();
     traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
-        auto frstNm = extractFileNm(fileNm);
-        auto suffix = extractTheSfx(fileNm);
+        auto frstNm = fileNm;
         auto index = 0;
         auto freq = count;
         freq == 0 ? --freq : freq;          //一开始为0则不计入循环判断
@@ -434,6 +426,24 @@ void MainWindow::on_pushButton_10_clicked()
         {
             frstNm.remove(index, whatToDel.size());
         }
-        return frstNm + suffix;
+        return frstNm;
+    });
+}
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    //删除中间的内容
+    auto startStr = ui->lineEdit_4->text();
+    auto endStr = ui->lineEdit_5->text();
+    auto frstAppearanceS = ui->radioButton->isChecked();
+    auto lastAppearedE = ui->radioButton_4->isChecked();
+    traverseTheFileLstAndProcess([&] (const QString &fileNm)->QString {
+        auto frstNm = fileNm;
+        auto frontIdx = StrManipulation::srchStrForwardOrBackward(frstNm, startStr, frstAppearanceS);
+        auto postIdx = StrManipulation::srchStrForwardOrBackward(frstNm, endStr, lastAppearedE);
+        if (frontIdx < 0 || postIdx < 0 || postIdx < frontIdx)
+            return fileNm;
+        frstNm.remove(frontIdx, postIdx - frontIdx - 1);
+        return frstNm;
     });
 }

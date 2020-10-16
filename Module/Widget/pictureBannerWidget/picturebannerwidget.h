@@ -150,7 +150,6 @@ protected:
     int _currentIndex;
     int _interval;
     QTimer *_timer;
-
 };
 
 #endif // PICTUREBANNERWIDGET_H

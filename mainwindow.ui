@@ -231,6 +231,9 @@
                     <height>16777215</height>
                    </size>
                   </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -495,6 +498,9 @@
                     <width>50</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>

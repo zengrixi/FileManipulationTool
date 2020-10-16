@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSharedPointer>
 
 #include "fileoperations.h"
 #include "charconversion.h"
@@ -47,6 +48,8 @@ private slots:
 
     void on_pushButton_10_clicked();
 
+    void on_pushButton_5_clicked();
+
 private:
     void initializeTheForm();
     void initializeTheCtl();
@@ -63,7 +66,7 @@ private:
     Type _type;
     QString _currPath;
     Qt::WindowFlags _winflags;
-    FileOperations *_fileOperations;
+    QSharedPointer<FileOperations> _fileOperations;
     Chardet::pFunSimplifiedAndTradConversion _simplifiedAndTradFunctions;
 };
 
