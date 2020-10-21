@@ -29,10 +29,12 @@ include($$PWD/Module/Module.pri)
 include($$PWD/Qrc/Qrc.pri)
 
 SOURCES += \
+        filelistwidget.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+        filelistwidget.h \
         mainwindow.h
 
 FORMS += \

@@ -60,3 +60,9 @@ void FileOperations::fileRename(const QString &filePath, const QString &curFileN
 
     eventLoop.exec();
 }
+
+void FileOperations::delFiles(const QString &fileDir)
+{
+    QFile file(fileDir);
+    file.remove();
+}

@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_delAllFollowing, &QPushButton::clicked, this, &MainWindow::delBtnTriggered);
 
     // 列表更新事件
+    connect(ui->listWidget, &FileListWidget::updLst, this, &MainWindow::showFilesUnderPath);
     connect(ui->comboBox, &QComboBox::editTextChanged, this, &MainWindow::showFilesUnderPath);
     connect(ui->comboBox_2, &QComboBox::editTextChanged, this, &MainWindow::showFilesUnderPath);
 }
