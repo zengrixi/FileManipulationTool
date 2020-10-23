@@ -4,22 +4,18 @@
 #include <QMainWindow>
 #include <QSharedPointer>
 
-#include "fileoperations.h"
 #include "charconversion.h"
+#include "fileoperations.h"
 #include "picturebannerwidget.h"
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-    enum class Type
-    {
-        File = 0x01, Folder = 0x02       
-    };
+    enum class Type { File = 0x01, Folder = 0x02 };
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -56,7 +52,7 @@ private:
     void initializeTheStyleShet();
     void showFilesUnderPath();
     void recursivelyTraverseFiles(const QString &path);
-    template <typename T>
+    template<typename T>
 
     void traverseTheFileLstAndProcess(T const &func);
 

@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-class FileOperations : public QObject
-{
+class FileOperations : public QObject {
     Q_OBJECT
 public:
     explicit FileOperations(QObject *parent = nullptr);

@@ -3,15 +3,14 @@
 
 #include <QDialog>
 
-class MoveDialog : public QDialog
-{
+class MoveDialog : public QDialog {
     Q_OBJECT
 public:
     explicit MoveDialog(QWidget *parent = nullptr);
     explicit MoveDialog(bool transparent, QWidget *parent = nullptr);
 
-    inline void drawWindowShadow(bool show) { _showShadow = show;}
-    inline void blockMoveOption(bool block) { _moveOption = block;}
+    inline void drawWindowShadow(bool show) { _showShadow = show; }
+    inline void blockMoveOption(bool block) { _moveOption = block; }
 
 protected:
     virtual void paintEvent(QPaintEvent *event) override;

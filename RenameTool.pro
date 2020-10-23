@@ -29,11 +29,13 @@ include($$PWD/Module/Module.pri)
 include($$PWD/Qrc/Qrc.pri)
 
 SOURCES += \
+        app.cpp \
         filelistwidget.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+        app.h \
         filelistwidget.h \
         mainwindow.h
 
@@ -51,3 +53,5 @@ CONFIG(debug, release|debug) {
 } else {
     DESTDIR = $$PWD/bin/release
 }
+
+RC_ICONS = logo.ico

@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-class StrManipulation : public QObject
-{
+class StrManipulation : public QObject {
     Q_OBJECT
 public:
     explicit StrManipulation(QObject *parent = nullptr);

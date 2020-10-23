@@ -6,15 +6,12 @@
 class QHBoxLayout;
 class QPropertyAnimation;
 
-class PictureBannerArrowWidget : public QWidget         //图片横幅箭头小部件
+class PictureBannerArrowWidget
+    : public QWidget //图片横幅箭头小部件
 {
     Q_OBJECT
 public:
-    enum ArrowType
-    {
-        Left,
-        Right
-    };
+    enum ArrowType { Left, Right };
     explicit PictureBannerArrowWidget(ArrowType type, QWidget *parent = nullptr);
 
 signals:
@@ -33,8 +30,8 @@ private:
     ArrowType _type;
 };
 
-
-class PictureBannerIndicator : public QWidget           //图片横幅指示器
+class PictureBannerIndicator
+    : public QWidget //图片横幅指示器
 {
     Q_OBJECT
 public:
@@ -52,7 +49,8 @@ private:
     bool _selected;
 };
 
-class PictureBannerPage : public QLabel         //图片横幅页面
+class PictureBannerPage
+    : public QLabel //图片横幅页面
 {
     Q_OBJECT
 public:
@@ -70,8 +68,8 @@ private:
     bool _bActive;
 };
 
-
-class PictureBannerView : public QWidget            //图片横幅视图
+class PictureBannerView
+    : public QWidget //图片横幅视图
 {
     Q_OBJECT
 public:
@@ -110,8 +108,8 @@ protected:
     QPropertyAnimation *_rightAnimation;
 };
 
-
-class PictureBannerWidget : public QWidget          //图片横幅小工具
+class PictureBannerWidget
+    : public QWidget //图片横幅小工具
 {
     Q_OBJECT
 public:
@@ -146,7 +144,7 @@ protected:
     PictureBannerView *_view;
     QHBoxLayout *_indLayout;
     QList<QPixmap> _pixmaps;
-    QList<PictureBannerIndicator*> _indicators;
+    QList<PictureBannerIndicator *> _indicators;
     int _currentIndex;
     int _interval;
     QTimer *_timer;

@@ -5,8 +5,7 @@
 
 #include "fileoperations.h"
 
-class FileListWidget : public QListWidget
-{
+class FileListWidget : public QListWidget {
     Q_OBJECT
 public:
     explicit FileListWidget(QWidget *parent = nullptr);
@@ -16,7 +15,7 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *event);
 
 signals:
-    void updLst();            //update list
+    void updLst(); // update list
 
 public slots:
     void delTheFile();
